@@ -47,6 +47,20 @@ router.get('/:id', async (req, res) => {
 
 
 //POST /hamsters
+
+router.post('/', async (req, res) => {
+    const object = req.body; //OBS! måste installera express.json för att detta ska funka
+
+    if (!object || !object.name || !object.age) {
+        res.sendStatus(400);
+        return;
+    }
+
+    const docRef = await db.collection('hamstrar').add(object);
+    res.send(docRef.id);
+})
+
+
 //PUT /hamsters/:id
 //DELETE /hamsters/:id
 

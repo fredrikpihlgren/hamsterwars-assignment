@@ -3,13 +3,12 @@ const app = express();
 const cors = require('cors');
 const path = require('path');
 
-const animals = require('./routes/animals.js');
 const hamsters = require('./routes/hamsters.js');
 
 
 const PORT = 1337;
 const staticFolder = path.join(__dirname, 'public');
-const staticImages = path.join(__dirname, 'hamsters');
+const staticImages = path.join(__dirname, 'img');
 
 //Middleware
 //Logger, skriver ut info om kommande requests
@@ -19,15 +18,12 @@ app.use((req, res, next) => {
 });
 app.use( express.json() );
 app.use( cors() );
-app.use( express.static(staticImages) );
+app.use( '/img', express.static(staticImages) );
 app.use( express.static(staticFolder) );
 
 
 //REST API FOR HAMSTERS
 app.use('/hamsters', hamsters);
-
-//Routes
-app.use('/animals', animals);
 
 
 
