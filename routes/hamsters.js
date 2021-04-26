@@ -5,67 +5,85 @@ const db = getDatabase();
 const express = require('express');
 const router = express.Router();
 
+const getAllData = require('../modules/get-all-data.js');
+const getOneData = require('../modules/get-one-data.js');
+const deleteOneData = require('../modules/delete-one-data.js');
+const postData = require('../modules/post-data.js');
+
+
 
 //** REST API ** 
-//GET hamsters
-router.get('/', async (req, res) => {
-    //console.log('/tools REST API');
-    //res.send('/tools REST API');
-
-    const hamsterRef = db.collection('hamstrar');
-    const snapshot = await hamsterRef.get();
-
-    if (snapshot.empty) {
-        res.send([]);
-        return;
+//GET all hamsters
+router.get('/', (req, res) => {
+    try {
+        //skicka in db, tom array, route, req & res:
+        let myPromise=getAllData(db, [], 'hamstrar', req, res);
+        myPromise.then(function(result) {
+            console.log(result);
+            res.status(200).send(result);
+        });
     }
-
-    let items = [];
-    snapshot.forEach(doc => {
-        const data = doc.data();
-        data.id = doc.id;
-        items.push(data);
-    });
-    res.send(items);
+    catch(error) {
+        console.log('ett fel inträffade '+error.message);
+        res.status(500).send(error.message);
+    }
 });
 
 
 //GET /hamsters/:id
-
-router.get('/:id', async (req, res) => {
+router.get('/:id', (req, res) => {
     const id = req.params.id;
-    const docRef = await db.collection('hamstrar').doc(id).get();
+    let myItem=[];
 
-    if (!docRef.exists) {
-        res.status(404).send('Hamster does not exist');
-        return
+    if (id == "random") {
+        try {
+        //skicka in db, tom array, route, req & res:
+            let myPromise=getAllData(db, [], 'hamstrar', req, res);
+            myPromise.then(function(result) {
+                let randomNumber=Math.floor(Math.random() * result.length);
+                //console.log(result.length, result);
+                res.status(200).send(result[randomNumber]);
+            });
+        }
+        catch(error) {
+            console.log('ett fel inträffade '+error.message);
+            res.status(500).send(error.message);
+        }
+            
+    }
+    else {
+        try {
+            //skicka in id, db, route, titel, req & res:
+            let myPromise=getOneData(id, db, 'hamstrar', 'Hamster', req, res, myItem);
+            myPromise.then(function(result) {
+                console.log(result);
+                res.status(200).send(result);
+            });
+        }
+        catch(error) {
+            console.log('ett fel inträffade '+error.message);
+            res.status(500).send(error.message);
+        }
     }
 
-    const data = docRef.data();
-    res.send(data);
-})
+});
+
+
+//DELETE /hamsters/:id
+router.delete('/:id', (req, res) => {
+    const id=req.params.id;
+    deleteOneData(id, db, 'hamstrar', req, res);
+});
+
 
 
 //POST /hamsters
-
-router.post('/', async (req, res) => {
-    const object = req.body; //OBS! måste installera express.json för att detta ska funka
-
-    console.log('POST TESTING: ', object);
-
-    if (!isHamsterObject(object)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    const docRef = await db.collection('hamstrar').add(object);
-    res.send(docRef.id);
-})
+router.post('/', (req, res) => {
+    postData(db, req, res);
+});
 
 
 //PUT /hamsters/:id
-
-//KOLLA PATCH OCKSÅ
 
 router.put('/:id', async (req, res) => {
     const object = req.body; //OBS! måste installera express.json för att detta ska funka
@@ -86,34 +104,6 @@ router.put('/:id', async (req, res) => {
 
 });
 
-
-function isHamsterObject(object) {
-    if (!object) {
-        return false;
-    }
-    else if (!object.name || !object.age) {
-        return false;
-    }
-    return true;
-}
-
-//DELETE /hamsters/:id
-
-router.delete('/:id', async (req, res) => {
-    const id=req.params.id;
-
-    if (!id) {
-        res.sendStatus(400);
-        return
-    }
-    if (!docRef.exists) {
-        res.status(404).send('Hamster does not exist');
-        return
-    }
-
-    await db.collection('hamstrar').doc(id).delete();
-    res.sendStatus(200);
-});
 
 
 module.exports = router;

@@ -12,10 +12,8 @@ fetchButton.addEventListener('click', async event => {
 		let text = JSON.stringify(json);
 		display.textContent=text;
 	}
-	catch {
-		console.log('something went wrong.');
-		//use not vague messages like these. Try err. in combo with some ifs?
+	catch(err) {
+		console.log('something went wrong. '+err.message);
 	}
 	
-
 });
