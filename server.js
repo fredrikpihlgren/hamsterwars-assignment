@@ -6,7 +6,7 @@ const path = require('path');
 const hamsters = require('./routes/hamsters.js');
 
 
-const PORT = process.env.PORT || 1337;
+const PORT = process.env.PORT || 1338;
 const staticFolder = path.join(__dirname, 'public');
 const staticImages = path.join(__dirname, 'img');
 
