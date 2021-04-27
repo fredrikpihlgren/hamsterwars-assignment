@@ -17,11 +17,7 @@ const postData = require('../modules/post-data.js');
 router.get('/', (req, res) => {
     try {
         //skicka in db, tom array, route, req & res, calltype:
-        let myPromise=getAllData(db, [], 'hamstrar', req, res, '');
-        myPromise.then(function(result) {
-            console.log(result);
-            res.status(200).send(result);
-        });
+        getAllData(db, [], 'hamstrar', req, res, '');
     }
     catch(error) {
         console.log('An error occurred '+error.message);
@@ -37,12 +33,8 @@ router.get('/:id', (req, res) => {
 
     if (id == "random") {
         try {
-        //skicka in db, tom array, route, req & res, calltype:
-            //let myPromise=getAllData(db, [], 'hamstrar', req, res, 'random');
+            //skicka in db, tom array, route, req & res, calltype:
             getAllData(db, [], 'hamstrar', req, res, 'random');
-            //myPromise.then(function(result) {
-                //console.log(Array.isArray(result));
-            //});
         }
         catch(error) {
             console.log('An error occurred '+error.message);
@@ -89,6 +81,8 @@ router.post('/', (req, res) => {
 
 //PUT /hamsters/:id
 
+const isObject = require('../modules/is-object.js'); //delete after
+
 router.put('/:id', async (req, res) => {
     const object = req.body;
     const id = req.params.id;
@@ -98,17 +92,32 @@ router.put('/:id', async (req, res) => {
         res.status(404).send('Object does not exist');
         return
     }
-    if (!id) {
-        res.status(400).send('pellejams');
+    //let status=isObject(object, "");
+    //console.log(status.objStatus);
+    //|| Object.keys(object).length <= 0
+    if (!object) {
+        res.status(400).send(status.errmsg);
+        return;
+    }
+    
+    if (Object.keys(object).length === 0) {
+        res.status(400).send("Object cannot be empty.");
         return;
     }
 
+    /*
+    let titt=Object.keys(object).length;
+    console.log(titt, 'apa');
+    if (titt == "") {console.log('göken');}
+    console.log(Object.keys(object));
+    */
+    
     /*vi kan kontrollera om det finns ett doc som matchar id i databasen
     Denna kod godkänner id som inte matchar, och lägger till ett nytt doc i databasen
     */
-        const docRef2 = await db.collection('hamstrar').doc(id);
-        await docRef2.set(object, {merge: true});
-        res.status(200).send('jajajajajaa heheeh');
+
+    const docRef2 = await db.collection('hamstrar').doc(id).set(object, {merge: true});
+    res.status(200).send(id+' updated with success.');
 
 });
 
