@@ -1,6 +1,6 @@
 
 
-async function getAllData(db, items, dbname, req, res) {
+async function getAllData(db, items, dbname, req, res, calltype) {
 	//console.log(items, dbname, req, res);
 	const myRef = db.collection(dbname);
     const snapshot = await myRef.get();
@@ -16,8 +16,17 @@ async function getAllData(db, items, dbname, req, res) {
         data.id = doc.id;
         items.push(data);
     });
-	//res.status(200).send(items);
-	return items;
+    if (calltype == 'random') {
+        let randomNumber=Math.floor(Math.random() * items.length);
+        //console.log(items.length, items);
+        console.log(items[randomNumber]);
+        res.status(200).send(items[randomNumber]);
+        return items[randomNumber];
+    }
+    else {
+	    res.status(200).send(items);
+	    return items;
+    }
 
 }
 

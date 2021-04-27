@@ -16,15 +16,15 @@ const postData = require('../modules/post-data.js');
 //GET all hamsters
 router.get('/', (req, res) => {
     try {
-        //skicka in db, tom array, route, req & res:
-        let myPromise=getAllData(db, [], 'hamstrar', req, res);
+        //skicka in db, tom array, route, req & res, calltype:
+        let myPromise=getAllData(db, [], 'hamstrar', req, res, '');
         myPromise.then(function(result) {
             console.log(result);
             res.status(200).send(result);
         });
     }
     catch(error) {
-        console.log('ett fel inträffade '+error.message);
+        console.log('An error occurred '+error.message);
         res.status(500).send(error.message);
     }
 });
@@ -37,16 +37,15 @@ router.get('/:id', (req, res) => {
 
     if (id == "random") {
         try {
-        //skicka in db, tom array, route, req & res:
-            let myPromise=getAllData(db, [], 'hamstrar', req, res);
-            myPromise.then(function(result) {
-                let randomNumber=Math.floor(Math.random() * result.length);
-                //console.log(result.length, result);
-                res.status(200).send(result[randomNumber]);
-            });
+        //skicka in db, tom array, route, req & res, calltype:
+            //let myPromise=getAllData(db, [], 'hamstrar', req, res, 'random');
+            getAllData(db, [], 'hamstrar', req, res, 'random');
+            //myPromise.then(function(result) {
+                //console.log(Array.isArray(result));
+            //});
         }
         catch(error) {
-            console.log('ett fel inträffade '+error.message);
+            console.log('An error occurred '+error.message);
             res.status(500).send(error.message);
         }
             
@@ -61,7 +60,7 @@ router.get('/:id', (req, res) => {
             });
         }
         catch(error) {
-            console.log('ett fel inträffade '+error.message);
+            console.log('An error occurred '+error.message);
             res.status(500).send(error.message);
         }
     }
@@ -76,31 +75,40 @@ router.delete('/:id', (req, res) => {
 });
 
 
-
 //POST /hamsters
 router.post('/', (req, res) => {
-    postData(db, req, res);
+    try {
+        postData(db, req, res);
+    }
+    catch(error) {
+        console.log('An error occurred '+error.message);
+        res.status(500).send(error.message);
+    }
 });
 
 
 //PUT /hamsters/:id
 
 router.put('/:id', async (req, res) => {
-    const object = req.body; //OBS! måste installera express.json för att detta ska funka
+    const object = req.body;
     const id = req.params.id;
+    const docRef = await db.collection('hamstrar').doc(id).get();
 
-    if (!object || !id) {
-        res.sendStatus(400);
+    if (!docRef.exists) {
+        res.status(404).send('Object does not exist');
+        return
+    }
+    if (!id) {
+        res.status(400).send('pellejams');
         return;
     }
 
     /*vi kan kontrollera om det finns ett doc som matchar id i databasen
     Denna kod godkänner id som inte matchar, och lägger till ett nytt doc i databasen
     */
-
-    const docRef=db.collection('hamstrar').doc(id);
-    await docRef.set(object, {merge: true});
-    res.sendStatus(200);
+        const docRef2 = await db.collection('hamstrar').doc(id);
+        await docRef2.set(object, {merge: true});
+        res.status(200).send('jajajajajaa heheeh');
 
 });
 
