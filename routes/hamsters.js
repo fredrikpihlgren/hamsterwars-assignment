@@ -42,6 +42,16 @@ router.get('/:id', (req, res) => {
         }
             
     }
+    else if (id == "winners" || id == "losers") {
+        try {
+            //skicka in db, tom array, route, req & res, calltype:
+            getAllData(db, [], 'hamstrar', req, res, id);
+        }
+        catch(error) {
+            console.log('An error occurred '+error.message);
+            res.status(500).send(error.message);
+        }
+    }
     else {
         try {
             //skicka in id, db, route, titel, req & res:

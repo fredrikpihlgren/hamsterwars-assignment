@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 
 const hamsters = require('./routes/hamsters.js');
+const matches = require('./routes/matches.js');
 
 
 const PORT = process.env.PORT || 1338;
@@ -24,8 +25,9 @@ app.use( '/img', express.static(staticImages) );
 app.use( express.static(staticFolder) );
 
 
-//REST API FOR HAMSTERS
+//REST API FOR HAMSTERS & MATCHES
 app.use('/hamsters', hamsters);
+app.use('/matches', matches);
 
 
 
