@@ -1,15 +1,13 @@
 const isObject = require('../modules/is-object.js');
 
-async function postData(db, req, res) { //paramcheckers
-	//OBS! måste installera express.json för att detta ska funka
-	const object = req.body;
+async function postData(db, dbname, req, res, object, paramcheckers) {
 
-	let status=isObject(object, ""); //, 'POST', paramcheckers
+	let status=isObject(object, "", 'POST', paramcheckers);
     if (!status.objStatus) {
         res.status(400).send(status.errmsg);
         return;
     }
-    const docRef = await db.collection('hamstrar').add(object);
+    const docRef = await db.collection(dbname).add(object);
     res.status(200).send({ id: docRef.id });
 }
 

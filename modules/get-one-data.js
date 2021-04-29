@@ -10,6 +10,8 @@ async function getOneData(id, db, dbname, titel, req, res, myItem) {
     const data = docRef.data();
 	myItem.push(data);
     //res.send(data);
+    res.status(200).send(data);
+    //if (!req.baseUrl == '/matchWinners') {res.status(200).send(data);} //added most recently, in case of error.
 	return data;
 }
 

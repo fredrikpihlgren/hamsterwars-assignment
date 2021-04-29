@@ -1,7 +1,6 @@
 const sortData = require('../modules/sort-data.js');
 
 async function getAllData(db, items, dbname, req, res, calltype) {
-	//console.log(items, dbname, req, res);
 	const myRef = db.collection(dbname);
     const snapshot = await myRef.get();
     let return_array=true;
@@ -19,21 +18,36 @@ async function getAllData(db, items, dbname, req, res, calltype) {
     });
     if (calltype == 'random') {
         let randomNumber=Math.floor(Math.random() * items.length);
-        //console.log(items.length, items);
-        console.log(items[randomNumber]);
+        //console.log(items[randomNumber]);
         return_array=false;
         res.status(200).send(items[randomNumber]);
         return items[randomNumber];
     }
-    else if (calltype == 'winners' || calltype == 'losers') {
-        //data in, type (string, 'wins'/'defeats'), max number of objects to be listed
+    else if (calltype == '/winners' || calltype == '/losers') {
         let sortedArray=sortData(items, calltype, 5);
         if (sortedArray.length <= 0) {
             res.status(404).send('No '+calltype+' were found.');
             return;
         }
+        console.log('status 200 coming up:');
+        res.status(200).send(sortedArray);
+        return sortedArray;
     }
     if (return_array) {
+        if (req.baseUrl == '/matchWinners') {
+            let newItems=[];
+                for (let i=0;i<items.length;i++) {
+                    if (req.params.id === items[i].winnerId) {
+                        console.log('object with index '+i+' that had winner id:'+items[i].winnerId+' was deleted.');
+                        newItems.push(items[i]);
+                    }
+                }
+                items=newItems;
+                if (items.length <= 0) {
+                    res.status(404).send('No '+calltype+' were found.');
+                    return;
+                }
+        }
 	    res.status(200).send(items);
 	    return items;
     }

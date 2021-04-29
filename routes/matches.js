@@ -11,12 +11,20 @@ const deleteOneData = require('../modules/delete-one-data.js');
 const postData = require('../modules/post-data.js');
 
 
+function paramCheckers(object) {
+    const paramcheckers=[
+        {type: object.winnerId, mess: "Object must have a value.", val: 'string'},
+        {type: object.loserId, mess:"Object must have a value.", val: 'string'}
+    ];
+    return paramcheckers;
+}
+
 
 //** REST API ** 
 //GET all matches
 router.get('/', (req, res) => {
     try {
-        //skicka in db, tom array, route, req & res, calltype:
+        //send in db, empty array, route, req & res, calltype:
         getAllData(db, [], 'matches', req, res, '');
     }
     catch(error) {
@@ -32,12 +40,7 @@ router.get('/:id', (req, res) => {
     const id = req.params.id;
     let myItem=[];
         try {
-            //skicka in id, db, route, titel, req & res:
-            let myPromise=getOneData(id, db, 'matches', 'Match', req, res, myItem);
-            myPromise.then(function(result) {
-                console.log(result);
-                res.status(200).send(result);
-            });
+            getOneData(id, db, 'matches', 'Match', req, res, myItem);
         }
         catch(error) {
             console.log('An error occurred '+error.message);
@@ -51,6 +54,20 @@ router.get('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
     const id=req.params.id;
     deleteOneData(id, db, 'matches', req, res);
+});
+
+
+//POST /matches
+router.post('/', (req, res) => {
+    try {
+        const object = req.body;
+        let paramcheckers=paramCheckers(object);
+        postData(db, 'matches', req, res, object, paramcheckers);
+    }
+    catch(error) {
+        console.log('An error occurred '+error.message);
+        res.status(500).send(error.message);
+    }
 });
 
 

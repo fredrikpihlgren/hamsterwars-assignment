@@ -2,8 +2,6 @@
 async function deleteOneData(id, db, dbname, req, res) {
 	const docRef = await db.collection(dbname).doc(id).get();
 
-    console.log(1);
-
     if (!docRef.exists) {
         res.sendStatus(404);
         return;
