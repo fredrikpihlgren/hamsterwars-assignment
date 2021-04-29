@@ -7,6 +7,7 @@ const hamsters = require('./routes/hamsters.js');
 const matches = require('./routes/matches.js');
 const matchWinners = require('./routes/matchWinners.js');
 const winnersLosers = require('./routes/winners-losers.js');
+const defeated = require('./routes/defeated.js');
 
 
 const PORT = process.env.PORT || 1338;
@@ -33,6 +34,10 @@ app.use('/matches', matches);
 app.use('/matchWinners', matchWinners);
 app.use('/winners', winnersLosers);
 app.use('/losers', winnersLosers);
+
+app.use('/defeated', defeated);
+app.use('/fewMatches', winnersLosers);
+app.use('/manyMatches', winnersLosers);
 
 
 

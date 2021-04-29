@@ -88,10 +88,16 @@ router.post('/', (req, res) => {
 //PUT /hamsters/:id
 
 router.put('/:id', async (req, res) => {
+    try {
     const object = req.body;
     let paramcheckers=paramCheckers(object);
     //db, dbname, req, res, object, paramcheckers
     putData(db, 'hamstrar', req, res, object, paramcheckers);
+    }
+    catch(error) {
+        console.log('An error occurred '+error.message);
+        res.status(500).send(error.message);
+    }
 
 });
 

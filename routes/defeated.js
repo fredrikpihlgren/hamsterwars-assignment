@@ -1,4 +1,3 @@
-
 const getDatabase = require('../database.js');
 const db = getDatabase();
 
@@ -20,9 +19,6 @@ router.get('/:id', (req, res) => {
         res.status(500).send(error.message);
     }
 });
-
-//if (req.baseUrl == '/matchWinners') {res.status(200).send('ok.');}
-
 
 
 module.exports = router;
